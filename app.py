@@ -1,14 +1,15 @@
-# import streamlit as st
+# import pathlib
 # import requests
+# import streamlit as st
+# import streamlit.components.v1 as components
 # import uuid
 
-# # Constants
 # WEBHOOK_URL = "https://gcg-big.app.n8n.cloud/webhook-test/bf4dd093-bb02-472c-9454-7ab9af97bd1d"
-# BEARER_TOKEN = "{123}"
+# BEARER_TOKEN = "1aaae10683651e62de041b9cf32f796f9ff2facc7f07f6045c16fc6c563cb8ac"
 
 # def generate_session_id():
 #     return str(uuid.uuid4())
-
+            
 # def send_message_to_llm(session_id, message):
 #     headers = {
 #         "Authorization": f"Bearer {BEARER_TOKEN}",
@@ -19,13 +20,42 @@
 #         "chatInput": message
 #     }
 #     response = requests.post(WEBHOOK_URL, json=payload, headers=headers)
-#     if response.status_code == 200:
-#         return response.json()["output"]
-#     else:
-#         return f"Error: {response.status_code} - {response.text}"
 
-# def main():
-#     st.title("Chat with LLM")
+#     print("Status Code:", response.status_code)
+#     print("Raw Response Text:", response.text)
+
+#     try:
+#         return response.json()["output"]
+#     except Exception as e:
+#         return f"Failed to decode JSON: {str(e)}"
+
+# def main():    
+#     st.markdown("""
+#     <style>   
+#     .chat-container{
+#         display: flex;
+#         margin-bottom: 10px;
+#         padding: 8px;
+#         font-family: 'Inter', sans-serif !important;
+#     }
+#     .user-message {
+#         margin-left: auto;
+#         background-color: #455a64;
+#         color: #ffffff;	;
+#         padding: 16px;
+#         border-radius: 18px;
+#         max-width: 75%;
+#     }
+#     .assistant-message {
+#         margin-right: auto;
+#         background-color: #343D46;
+#         color: #ffffff;	;
+#         padding: 20px;
+#         border-radius: 18px;
+#         max-width: 75%;
+#     }
+#         </style>
+#     """, unsafe_allow_html=True)
 
 #     # Initialize session state
 #     if "messages" not in st.session_state:
@@ -35,8 +65,11 @@
 
 #     # Display chat messages
 #     for message in st.session_state.messages:
-#         with st.chat_message(message["role"]):
-#             st.write(message["content"])
+#         if message["role"] == "user":
+#             st.markdown(f"<div class='chat-container'><div class='user-message'>{message['content']}</div></div>", unsafe_allow_html=True)
+            
+#         else:
+#             st.markdown(f"<div class='chat-container'><div class='assistant-message'>{message['content']}</div></div>", unsafe_allow_html=True)
 
 #     # User input
 #     user_input = st.chat_input("Type your message here...")
@@ -44,25 +77,17 @@
 #     if user_input:
 #         # Add user message to chat history
 #         st.session_state.messages.append({"role": "user", "content": user_input})
-#         with st.chat_message("user"):
-#             st.write(user_input)
+#         st.markdown(f"<div class='chat-container'><div class='user-message'>{user_input}</div></div>", unsafe_allow_html=True)
 
 #         # Get LLM response
 #         llm_response = send_message_to_llm(st.session_state.session_id, user_input)
 
 #         # Add LLM response to chat history
 #         st.session_state.messages.append({"role": "assistant", "content": llm_response})
-#         with st.chat_message("assistant"):
-#             st.write(llm_response)
+#         st.markdown(f"<div class='chat-container'><div class='assistant-message'>{llm_response}</div></div>", unsafe_allow_html=True)
 
 # if __name__ == "__main__":
 #     main()
-
-
-
-
-
-
 
 
 import streamlit as st
@@ -71,12 +96,40 @@ import uuid
 from supabase import create_client, Client
 
 # Supabase setup
-SUPABASE_URL = "YOUR_SUPABASE_PROJECT_URL_HERE"
-SUPABASE_KEY = "YOUR_SUPABASE_ANONYMOUS_API_KEY_HERE"
+SUPABASE_URL = "https://ttygmhmwmgpblfstbang.supabase.co"
+SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR0eWdtaG13bWdwYmxmc3RiYW5nIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0NjY3Mjk4OCwiZXhwIjoyMDYyMjQ4OTg4fQ.U2zgReY_71RZY_BTRSgGgbd8IrVXCCLHef_vFGaQSYA"
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 # Webhook URL (replace with your n8n webhook URL)
 WEBHOOK_URL = "https://gcg-big.app.n8n.cloud/webhook-test/bf4dd093-bb02-472c-9454-7ab9af97bd1d"
+
+st.markdown("""
+<style>
+.chat-container {
+    display: flex;
+    margin-bottom: 10px;
+    padding: 8px;
+    font-family: 'Inter', sans-serif !important;
+}
+.user-message {
+    margin-left: auto;
+    background-color: #455a64;
+    color: #ffffff;
+    padding: 16px;
+    border-radius: 18px;
+    max-width: 75%;
+}
+.assistant-message {
+    margin-right: auto;
+    background-color: #343D46;
+    color: #ffffff;
+    padding: 20px;
+    border-radius: 18px;
+    max-width: 75%;
+}
+</style>
+""", unsafe_allow_html=True)
+
 
 def login(email: str, password: str):
     try:
@@ -105,10 +158,18 @@ def init_session_state():
     if "messages" not in st.session_state:
         st.session_state.messages = []
 
+# def display_chat():
+#     for message in st.session_state.messages:
+#         with st.chat_message(message["role"]):
+#             st.markdown(message["content"])
+
 def display_chat():
     for message in st.session_state.messages:
-        with st.chat_message(message["role"]):
-            st.markdown(message["content"])
+        if message["role"] == "user":
+            st.markdown(f"<div class='chat-container'><div class='user-message'>{message['content']}</div></div>", unsafe_allow_html=True)
+        else:
+            st.markdown(f"<div class='chat-container'><div class='assistant-message'>{message['content']}</div></div>", unsafe_allow_html=True)
+
 
 def handle_logout():
     st.session_state.auth = None
@@ -138,7 +199,6 @@ def auth_ui():
                 st.success("Sign up successful! Please log in.")
 
 def main():
-    st.title("AI Chat Interface")
     init_session_state()
 
     if st.session_state.auth is None:
@@ -151,35 +211,63 @@ def main():
             handle_logout()
 
         display_chat()
-
+        
         if prompt := st.chat_input("What is your message?"):
             st.session_state.messages.append({"role": "user", "content": prompt})
-            with st.chat_message("user"):
-                st.markdown(prompt)
+            st.markdown(f"<div class='chat-container'><div class='user-message'>{prompt}</div></div>", unsafe_allow_html=True)
 
-            # Prepare the payload
+            # Prepare payload
             payload = {
                 "chatInput": prompt,
                 "sessionId": st.session_state.session_id
             }
-            
-            # Get the access token from the session
+        
             access_token = st.session_state.auth.session.access_token
-            
-            # Send request to webhook
+
             headers = {
                 "Authorization": f"Bearer {access_token}"
             }
+
             with st.spinner("AI is thinking..."):
                 response = requests.post(WEBHOOK_URL, json=payload, headers=headers)
-            
+
             if response.status_code == 200:
                 ai_message = response.json().get("output", "Sorry, I couldn't generate a response.")
                 st.session_state.messages.append({"role": "assistant", "content": ai_message})
-                with st.chat_message("assistant"):
-                    st.markdown(ai_message)
+                st.markdown(f"<div class='chat-container'><div class='assistant-message'>{ai_message}</div></div>", unsafe_allow_html=True)
             else:
                 st.error(f"Error: {response.status_code} - {response.text}")
+
+
+        # if prompt := st.chat_input("What is your message?"):
+        #     st.session_state.messages.append({"role": "user", "content": prompt})
+        #     with st.chat_message("user"):
+        #         st.markdown(prompt)
+
+        #     # Prepare the payload
+        #     payload = {
+        #         "chatInput": prompt,
+        #         "sessionId": st.session_state.session_id
+        #     }
+            
+        #     # Get the access token from the session
+        #     access_token = st.session_state.auth.session.access_token
+            
+        #     # Send request to webhook
+        #     headers = {
+        #         "Authorization": f"Bearer {access_token}"
+        #     }
+        #     with st.spinner("AI is thinking..."):
+        #         response = requests.post(WEBHOOK_URL, json=payload, headers=headers)
+            
+        #     if response.status_code == 200:
+        #         ai_message = response.json().get("output", "Sorry, I couldn't generate a response.")
+        #         st.session_state.messages.append({"role": "assistant", "content": ai_message})
+        #         with st.chat_message("assistant"):
+        #             st.markdown(ai_message)
+        #     else:
+        #         st.error(f"Error: {response.status_code} - {response.text}")
+                
 
 if __name__ == "__main__":
     main()
