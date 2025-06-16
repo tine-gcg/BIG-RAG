@@ -12,6 +12,7 @@ from io import BytesIO
 from kokoro import KPipeline
 from supabase import create_client, Client
 
+# Fxckbvrn0ut!!!
 # Supabase setup
 SUPABASE_URL = "https://ttygmhmwmgpblfstbang.supabase.co"
 SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR0eWdtaG13bWdwYmxmc3RiYW5nIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0NjY3Mjk4OCwiZXhwIjoyMDYyMjQ4OTg4fQ.U2zgReY_71RZY_BTRSgGgbd8IrVXCCLHef_vFGaQSYA"
@@ -19,7 +20,7 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 # Webhook URL (replace with your n8n webhook URL)
 # WEBHOOK_URL = "https://gcg-big.app.n8n.cloud/webhook-test/bf4dd093-bb02-472c-9454-7ab9af97bd1d"
-WEBHOOK_URL = "https://big-1.app.n8n.cloud/webhook-test/bf4dd093-bb02-472c-9454-7ab9af97bd1d"
+WEBHOOK_URL = "https://big.app.n8n.cloud/webhook-test/bf4dd093-bb02-472c-9454-7ab9af97bd1d"
 
 st.markdown("""
 <style>one 
@@ -54,6 +55,10 @@ def init_kokoro():
 
 def init_whisper():
     model = WhisperModel("large-v3", device="cpu", compute_type="int8")
+    
+    # segments = model.transcribe(prompt, beam_size=5)
+    # for segment in segments:
+    #     print("[%.2fs -> %.2fs] %s (%.2f%%)" % (segment.start, segment.end, segment.text))
     return model
 
 def login(email: str, password: str):
@@ -83,12 +88,18 @@ def init_session_state():
     if "messages" not in st.session_state:
         st.session_state.messages = []
 
+# def display_chat():
+#     for message in st.session_state.messages:
+#         with st.chat_message(message["role"]):
+#             st.markdown(message["content"])
+
 def display_chat():
     for message in st.session_state.messages:
         if message["role"] == "user":
             st.markdown(f"<div class='chat-container'><div class='user-message'>{message['content']}</div></div>", unsafe_allow_html=True)
         else:
             st.markdown(f"<div class='chat-container'><div class='assistant-message'>{message['content']}</div></div>", unsafe_allow_html=True)
+
 
 def handle_logout():
     st.session_state.auth = None
@@ -121,7 +132,8 @@ def main():
     init_session_state()
     
     kokoro_pipeline = init_kokoro()
-    # model = init_whisper()
+    model = init_whisper()
+    
 
     if st.session_state.auth is None:
         auth_ui()
@@ -156,7 +168,22 @@ def main():
                 st.session_state.messages.append({"role": "assistant", "content": ai_message})
                 st.markdown(f"<div class='chat-container'><div class='assistant-message'>{ai_message}</div></div>", unsafe_allow_html=True)
 
-                if enable_audio:                    
+                
+                if enable_audio:
+                    
+                #     audio = audiorecorder("Click to record", "Recording...", "Stop recording", "Recording failed")
+                #     if audio is not None:
+                #         # Save the audio to a temporary file
+                #         with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as temp_audio_file:
+                #             temp_audio_file.write(audio)
+                #             temp_audio_path = temp_audio_file.name
+
+                #         # Transcribe the audio using Whisper
+                #         segments, info = model.transcribe(temp_audio_path, beam_size=5)
+                #         transcription = " ".join([segment.text for segment in segments])
+                #         st.session_state.messages.append({"role": "user", "content": transcription})
+                #         st.markdown(f"<div class='chat-container'><div class='user-message'>{transcription}</div></div>", unsafe_allow_html=True)
+                    
                     with st.spinner("Generating audio..."):
                         generator = kokoro_pipeline(
                             ai_message,
@@ -164,7 +191,7 @@ def main():
                             speed=1,
                             split_pattern=r'\n+'
                         )
-                        
+
                         # Collect all audio arrays
                         audio_segments = []
                         for _, _, audio in generator:
@@ -189,9 +216,35 @@ def main():
                         </audio>
                         """
                         st.markdown(audio_html, unsafe_allow_html=True)
+                         
+                # if enable_audio:
+                #     with st.spinner("Generating audio..."):
+                #         generator = kokoro_pipeline(
+                #             ai_message,
+                #             voice='af_heart',  # or the voice you want
+                #             speed=1,
+                #             split_pattern=r'\n+'
+                #         )
+                #         # Play all segments sequentially
+                #         for i, (gs, ps, audio) in enumerate(generator):
+                #             # Convert audio numpy array to in-memory wav
+                #             buffer = BytesIO()
+                #             sf.write(buffer, audio, samplerate=24000, format='WAV')
+                #             buffer.seek(0)
+                #             # st.audio(buffer, format='audio/wav')
+                #             # Convert to base64 and autoplay
+                #             b64 = base64.b64encode(buffer.read()).decode()
+                #             audio_html = f"""
+                #             <audio autoplay>
+                #                 <source src="data:audio/wav;base64,{b64}" type="audio/wav">
+                #                 Your browser does not support the audio element.
+                #             </audio>
+                #             """
+                #             st.markdown(audio_html, unsafe_allow_html=True)
                             
             else:
                 st.error(f"Error: {response.status_code} - {response.text}")
+
 
 if __name__ == "__main__":
     main()
