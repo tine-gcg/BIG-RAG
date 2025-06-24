@@ -19,7 +19,9 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 # Webhook URL (replace with your n8n webhook URL)
 # WEBHOOK_URL = "https://gcg-big.app.n8n.cloud/webhook-test/bf4dd093-bb02-472c-9454-7ab9af97bd1d"
+# WEBHOOK_URL = "http://localhost:8000/chat"
 WEBHOOK_URL = "https://big-1.app.n8n.cloud/webhook-test/bf4dd093-bb02-472c-9454-7ab9af97bd1d"
+
 
 st.markdown("""
 <style>one 
