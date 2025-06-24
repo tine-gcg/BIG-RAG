@@ -71,8 +71,11 @@ gitdb==4.0.11
 GitPython==3.1.43
 exceptiongroup==1.2.2
 frozenlist==1.4.1
-soundfile==0.13.1
 
+soundfile==0.13.1
+streamlit-audiorecorder==0.0.6
+ipython==9.1.0
+kokoro==0.9.4
 
 
 
