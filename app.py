@@ -6,7 +6,7 @@ import streamlit as st
 import tempfile
 import uuid
 from audiorecorder import audiorecorder
-from faster_whisper import WhisperModel
+# from faster_whisper import WhisperModel
 from IPython.display import display
 from io import BytesIO
 from kokoro import KPipeline
