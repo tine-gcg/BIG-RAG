@@ -54,9 +54,9 @@ def init_kokoro():
     pipeline = KPipeline(lang_code='a')
     return pipeline
 
-def init_whisper():
-    model = WhisperModel("large-v3", device="cpu", compute_type="int8")
-    return model
+# def init_whisper():
+#     model = WhisperModel("large-v3", device="cpu", compute_type="int8")
+#     return model
 
 def login(email: str, password: str):
     try:
