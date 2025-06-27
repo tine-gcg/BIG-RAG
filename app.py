@@ -52,17 +52,6 @@ st.markdown("""
 }
 </style>
 """, unsafe_allow_html=True)
-def download_spacy_model():
-    """Download spaCy model if not already installed"""
-    try:
-        spacy.load("en_core_web_sm")
-        print("spaCy model already installed")
-    except OSError:
-        print("Downloading spaCy model...")
-        subprocess.check_call([
-            sys.executable, "-m", "spacy", "download", "en_core_web_sm"
-        ])
-        print("spaCy model downloaded successfully")
 
 def init_kokoro():
     pipeline = KPipeline(lang_code='a')
@@ -135,7 +124,6 @@ def auth_ui():
 
 def main():
     init_session_state()
-    download_spacy_model()
     
     kokoro_pipeline = init_kokoro()
     # model = init_whisper()
