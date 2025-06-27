@@ -17,10 +17,6 @@ supabase==2.8.1
 kokoro==0.9.4
 torch==2.2.2
 
-spacy==3.8.7
-en-core-web-sm==3.8.0
-
-
 
 # Core dependencies
 # numpy==1.26.4
@@ -44,9 +40,6 @@ en-core-web-sm==3.8.0
 # spacy==3.8.7
 # en-core-web-sm==3.7.1
 # https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl
-
-
-
 
 # # === Core and Web Dependencies ===
 # streamlit==1.38.0
