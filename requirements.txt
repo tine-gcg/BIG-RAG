@@ -1,27 +1,4 @@
-# Core dependencies
-numpy==1.26.4
-requests==2.32.3
-streamlit==1.38.0
-
-# Audio processing
-soundfile==0.13.1
-streamlit-audiorecorder==0.0.6
-
-# Display support (for IPython display in notebooks)
-ipython==9.1.0
-
-# Supabase client
-supabase==2.8.1
-
-# Kokoro speech/audio pipeline
-kokoro==0.9.4
-torch==2.2.2
-
-spacy==3.7.2
-https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.7.1/en_core_web_sm-3.7.1-py3-none-any.whl
-
-
-# Core dependencies
+# # Core dependencies
 # numpy==1.26.4
 # requests==2.32.3
 # streamlit==1.38.0
@@ -40,9 +17,39 @@ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.7.1
 # kokoro==0.9.4
 # torch==2.2.2
 
-# spacy==3.8.7
-# en-core-web-sm==3.7.1
-# https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl
+# spacy==3.7.2
+# https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.7.2/en_core_web_sm-3.7.2-py3-none-any.whl
+
+
+
+
+Core dependencies
+numpy==1.26.4
+requests==2.32.3
+streamlit==1.38.0
+
+# Audio processing
+soundfile==0.13.1
+streamlit-audiorecorder==0.0.6
+
+# Display support (for IPython display in notebooks)
+ipython==9.1.0
+
+# Supabase client
+supabase==2.8.1
+
+# Kokoro speech/audio pipeline
+kokoro==0.9.4
+torch==2.2.2
+
+spacy==3.8.7
+en-core-web-sm==3.7.1
+https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.7/en_core_web_sm-3.8.7-py3-none-any.whl
+
+
+
+
+
 
 # # === Core and Web Dependencies ===
 # streamlit==1.38.0
