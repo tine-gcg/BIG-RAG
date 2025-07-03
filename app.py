@@ -152,51 +152,72 @@ def main():
 
             access_token = st.session_state.auth.session.access_token
             headers = {"Authorization": f"Bearer {access_token}"}
+            
+            try:
+                with st.spinner("AI is thinking..."):
+                    response = requests.post(WEBHOOK_URL, json=payload, headers=headers, timeout=60)
 
-            with st.spinner("AI is thinking..."):
-                response = requests.post(WEBHOOK_URL, json=payload, headers=headers)
+                if response.status_code == 200:
+                    ai_message = response.json().get("output", "Sorry, I couldn't generate a response.")
+                    st.session_state.messages.append({"role": "assistant", "content": ai_message})
+                    st.markdown(f"<div class='chat-container'><div class='assistant-message'>{ai_message}</div></div>", unsafe_allow_html=True)
+            
 
-            if response.status_code == 200:
-                ai_message = response.json().get("output", "Sorry, I couldn't generate a response.")
-                st.session_state.messages.append({"role": "assistant", "content": ai_message})
-                st.markdown(f"<div class='chat-container'><div class='assistant-message'>{ai_message}</div></div>", unsafe_allow_html=True)
+                # with st.spinner("AI is thinking..."):
+                #     response = requests.post(WEBHOOK_URL, json=payload, headers=headers)
 
-                if enable_audio:                    
-                    with st.spinner("Generating audio..."):
-                        generator = kokoro_pipeline(
-                            ai_message,
-                            voice='af_heart',
-                            speed=1,
-                            split_pattern=r'\n+'
-                        )
-                        
-                        # Collect all audio arrays
-                        audio_segments = []
-                        for _, _, audio in generator:
-                            audio_segments.append(audio)
+                # if response.status_code == 200:
+                #     ai_message = response.json().get("output", "Sorry, I couldn't generate a response.")
+                #     st.session_state.messages.append({"role": "assistant", "content": ai_message})
+                #     st.markdown(f"<div class='chat-container'><div class='assistant-message'>{ai_message}</div></div>", unsafe_allow_html=True)
 
-                        # Concatenate all audio arrays
-                        full_audio = np.concatenate(audio_segments)
-
-                        # Convert to WAV in memory
-                        buffer = BytesIO()
-                        sf.write(buffer, full_audio, samplerate=24000, format='WAV')
-                        buffer.seek(0)
-
-                        # Convert to base64
-                        b64 = base64.b64encode(buffer.read()).decode()  
-
-                        # Autoplay a single audio tag
-                        audio_html = f"""
-                        <audio autoplay>
-                            <source src="data:audio/wav;base64,{b64}" type="audio/wav">
-                            Your browser does not support the audio element.
-                        </audio>
-                        """
-                        st.markdown(audio_html, unsafe_allow_html=True)
+                    if enable_audio:                    
+                        with st.spinner("Generating audio..."):
+                            generator = kokoro_pipeline(
+                                ai_message,
+                                voice='af_heart',
+                                speed=1,
+                                split_pattern=r'\n+'
+                            )
                             
-            else:
-                st.error(f"Error: {response.status_code} - {response.text}")
+                            # Collect all audio arrays
+                            audio_segments = []
+                            for _, _, audio in generator:
+                                audio_segments.append(audio)
+
+                            # Concatenate all audio arrays
+                            full_audio = np.concatenate(audio_segments)
+
+                            # Convert to WAV in memory
+                            buffer = BytesIO()
+                            sf.write(buffer, full_audio, samplerate=24000, format='WAV')
+                            buffer.seek(0)
+
+                            # Convert to base64
+                            b64 = base64.b64encode(buffer.read()).decode()  
+
+                            # Autoplay a single audio tag
+                            audio_html = f"""
+                            <audio autoplay>
+                                <source src="data:audio/wav;base64,{b64}" type="audio/wav">
+                                Your browser does not support the audio element.
+                            </audio>
+                            """
+                            st.markdown(audio_html, unsafe_allow_html=True)
+                            
+                # else:
+                #     st.error(f"Error: {response.status_code} - {response.text}")
+                else:
+                    # Friendly fallback if backend fails
+                    st.session_state.messages.append({"role": "assistant", "content": "I'm having trouble processing that. The answer might be too long. Try rephrasing or asking a shorter question."})
+                    st.markdown(f"<div class='chat-container'><div class='assistant-message'>I'm having trouble processing that. The answer might be too long. Try rephrasing or asking a shorter question.</div></div>", unsafe_allow_html=True)
+
+            except requests.exceptions.RequestException as e:
+                # Handle network/timeout issues
+                st.session_state.messages.append({"role": "assistant", "content": "Network error. Please try again later."})
+                st.markdown(f"<div class='chat-container'><div class='assistant-message'>Network error. Please try again later.</div></div>", unsafe_allow_html=True)
+                
+        
 
 if __name__ == "__main__":
     main()
