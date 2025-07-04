@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <title>Chat</title>
+</head>
+<body class="bg-gray-900 text-white min-h-screen p-4 font-sans">
+  <div class="max-w-3xl mx-auto space-y-6">
+    <div class="flex justify-between items-center">
+      <h1 class="text-2xl font-bold">🔊 RAG Chatbot</h1>
+      <a href="{{ url_for('logout') }}" class="text-sm text-red-300 hover:underline">Logout</a>
+    </div>
+
+    <div class="space-y-2">
+      {% for msg in messages %}
+        <div class="p-4 rounded {{ 'bg-blue-600 ml-auto text-right' if msg.role == 'user' else 'bg-gray-700 mr-auto text-left' }}">
+          {{ msg.content }}
+        </div>
+      {% endfor %}
+    </div>
+
+    {% if audio_html %}
+      {{ audio_html|safe }}
+    {% endif %}
+
+    <form method="POST" class="bg-gray-800 p-4 rounded space-y-4">
+      <textarea name="prompt" required class="w-full p-2 rounded bg-gray-100 text-black" rows="2" placeholder="Your message..."></textarea>
+      <label class="flex items-center space-x-2 text-sm">
+        <input type="checkbox" name="enable_audio" class="form-checkbox">
+        <span>Enable AI Voice</span>
+      </label>
+      <button type="submit" class="bg-green-500 px-4 py-2 rounded text-white">Send</button>
+    </form>
+  </div>
+</body>
+</html>

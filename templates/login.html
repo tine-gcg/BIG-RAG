@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <title>Login</title>
+</head>
+<body class="bg-gray-100 flex items-center justify-center h-screen">
+  <form method="POST" class="bg-white p-6 rounded shadow-md space-y-4 w-96">
+    <h2 class="text-xl font-bold">Login</h2>
+    {% if error %}<p class="text-red-500">{{ error }}</p>{% endif %}
+    <input type="email" name="email" placeholder="Email" required class="w-full border p-2 rounded">
+    <input type="password" name="password" placeholder="Password" required class="w-full border p-2 rounded">
+    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded w-full">Login</button>
+  </form>
+</body>
+</html>
