@@ -1,3 +1,0 @@
-build-essential
-libsndfile1
-ffmpeg
