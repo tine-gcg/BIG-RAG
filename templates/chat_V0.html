@@ -1,0 +1,127 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+   <link rel="stylesheet" href="{{ url_for('static', filename='css/output.css') }}">
+  <title>Chat</title>
+</head>
+<body class="bg-gray-900 text-white min-h-screen p-4 font-sans">
+  <div class="max-w-3xl mx-auto space-y-6">
+    <div class="flex justify-between items-center">
+      <h1 class="text-2xl font-bold">AskBIG</h1>
+      <a href="{{ url_for('logout') }}" class="text-sm text-red-300 hover:underline">Logout</a>
+    </div>
+
+    <div class="space-y-2">
+      {% for msg in messages %}
+        <div class="p-4 rounded {{ 'bg-blue-600 ml-auto text-right' if msg.role == 'user' else 'bg-gray-700 mr-auto text-left' }}">
+          {{ msg.content }}
+        </div>
+      {% endfor %}
+    </div>
+
+    {% if audio_html %}
+      {{ audio_html|safe }}
+    {% endif %}
+
+    <form method="POST" class="bg-gray-800 p-4 rounded space-y-4">
+      <textarea name="prompt" required class="w-full p-2 rounded bg-gray-100 text-black" rows="2" placeholder="Your message..."></textarea>
+      <label class="flex items-center space-x-2 text-sm">
+        <input type="checkbox" name="enable_audio" class="form-checkbox">
+        <span>Enable AI Voice</span>
+      </label>
+      <button type="submit" class="bg-green-500 px-4 py-2 rounded text-white">Send</button>
+    </form>
+  </div>
+</body>
+</html> -->
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/output.css') }}">
+  <title>AskBIG</title>
+</head>
+<body class="bg-[#30313e] text-white min-h-screen p-4 font-sans">
+  <!-- <div class="max-w-md mx-auto space-y-6 lg:w-3/4"> -->
+  <!-- <div class="w-full max-w-md px-4 mx-auto space-y-6 sm:max-w-lg lg:w-8"> -->
+  <div class="w-3/5 mx-auto space-y-6">
+    <!-- Header -->
+    <div class="flex justify-between items-center">
+      <h1 class="text-2xl font-bold font-poppins">AskBIG</h1>
+      <a href="{{ url_for('logout') }}" class="text-sm text-white hover:underline font-poppins ">Logout</a>
+    </div>
+
+    <!-- Chat Messages -->
+    <div class="space-y-2">
+      {% for msg in messages %}
+        <div class="flex {{ 'justify-end' if msg.role == 'user' else 'justify-start' }}">
+          <div class="max-w-[80%] p-3 rounded-2xl text-sm leading-relaxed 
+            {{ 'bg-[#606288] text-white rounded-tl-[30px] rounded-tr-sm rounded-bl-[30px] rounded-br-[30px]' if msg.role == 'user' 
+            else 'bg-gray-700 text-white rounded-tr-[30px] rounded-tl-sm rounded-br-[30px] rounded-bl-[30px]' }}">
+            {{ msg.content }}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+    <!-- Audio (Optional) -->
+    {% if audio_html %}
+      <div class="mt-4">
+        {{ audio_html|safe }}
+      </div>
+    {% endif %}
+
+    <!-- Chat Form -->
+    <!-- <form method="POST" class="bg-gray-800 p-4 rounded-xl space-y-4 shadow-md">
+      <textarea name="prompt" required class="w-full p-3 rounded-md bg-gray-100 text-black text-sm resize-none" rows="2" placeholder="Type your message..."></textarea>
+
+      <label class="flex items-center space-x-2 text-sm text-gray-300">
+        <input type="checkbox" name="enable_audio" class="form-checkbox">
+        <span>Enable AI Voice</span>
+      </label>
+
+      <button type="submit" class="w-full bg-green-500 hover:bg-green-600 px-4 py-2 rounded-md text-white font-medium transition duration-200">
+        Send
+      </button>
+    </form> -->
+    
+    <!-- Input Section -->
+    <form method="POST" class="fixed bottom-0 left-0 w-full bg-[#30313e] border-t-2 border-[#606288] p-3 space-y-3 shadow-[0_-16px_32px_rgba(12,12,13,0.4)] z-10">
+      <!-- Textarea -->
+      <textarea
+        name="prompt"
+        required
+        class="w-full h-20 p-3 rounded-md bg-gray-100 text-sm text-black resize-none placeholder:text-gray-500"
+        placeholder="Type your message..."
+      ></textarea>
+
+      <!-- Bottom Row (Checkbox + Buttons) -->
+      <div class="flex items-center justify-between">
+        <label class="flex items-center space-x-2 text-sm text-gray-300">
+          <input type="checkbox" name="enable_audio" class="form-checkbox text-indigo-400">
+          <span>Enable AI Voice</span>
+        </label>
+
+        <div class="flex space-x-2 items-center">
+          <!-- Mic Icon -->
+          <button type="button" title="Audio" class="p-2 rounded-full hover:bg-gray-700">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="#9EA0E6" viewBox="0 0 25 25" class="w-6 h-6">
+              <!-- Your mic icon path -->
+              <path d="M14.0625 4.22912C14.0625 2.83746 12.3792 2.14058 11.3958 3.12496L6.70834 7.81246..." />
+            </svg>
+          </button>
+
+          <!-- Send Button -->
+          <button type="submit" class="bg-green-500 hover:bg-green-600 px-4 py-2 rounded-md text-white font-medium transition duration-200">
+            Send
+          </button>
+        </div>
+      </div>
+    </form>
+
+  </div>
+</body>
+</html>

@@ -1,16 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <title>Login</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AskBIG</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/output.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
-<body class="bg-gray-100 flex items-center justify-center h-screen">
-  <form method="POST" class="bg-white p-6 rounded shadow-md space-y-4 w-96">
-    <h2 class="text-xl font-bold">Login</h2>
-    {% if error %}<p class="text-red-500">{{ error }}</p>{% endif %}
-    <input type="email" name="email" placeholder="Email" required class="w-full border p-2 rounded">
-    <input type="password" name="password" placeholder="Password" required class="w-full border p-2 rounded">
-    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded w-full">Login</button>
-  </form>
+<body class="bg-[#30313e] min-h-screen flex items-center justify-center px-4 py-8">
+    <div class="w-full max-w-xs lg:max-w-[1038px] lg:h-[610px] flex flex-col lg:flex-row rounded-[2.5rem] shadow-xl overflow-hidden bg-[#30313e]">
+        <!-- Left Panel -->
+        <div class="flex flex-col justify-center bg-gradient-to-tr from-[#30313e] via-[#606288] to-[#7f81c6] w-full p-8 text-white rounded-t-[2.5rem] lg:justify-start lg:items-start lg:px-13 lg:py-13 lg:w-5/7 lg:rounded-tl-[2.5rem] lg:rounded-tr-none lg:rounded-bl-[2.5rem]">
+            <h1 class="text-4xl font-bold font-poppins mb-1 lg:text-7xl">Welcome.</h1>
+            <p class="text-[0.5rem] leading-relaxed mb-3 font-extralight px-1 lg:text-[0.7rem] lg:px-2">
+                Your one-stop assistant for data, insights, and <br> everything BIG.<br>
+                Ask questions. Get instant answers. Make smarter <br>decisions.
+            </p>
+        </div>
+
+        <!-- Right Panel -->
+        <div class="bg-[#9ea0e6] w-full px-6 p-6 flex flex-col justify-center rounded-b-[2.5rem] lg:w-3/7 lg:rounded-br-[2.5rem] lg:rounded-bl-none lg:px-13 lg:py-13">
+            <!-- Icon -->
+            <div class="flex justify-center mb-5">
+                <img src="{{ url_for('static', filename='assets/user-icon.svg') }}" alt="Icon" class="w-30 h-30 lg:w-40 lg:h-40">
+            </div>
+
+            <form method="POST" class="space-y-4">
+                {% if error %}
+                    <p class="text-xs text-red-200 bg-red-500 px-3 py-1 rounded">{{ error }}</p>
+                {% endif %}
+
+                <div class="flex justify-center items-center font-poppins">
+                    <input type="email" name="email" placeholder="   Email"
+                        class="w-11/12 p-2 pt-2 text-sm rounded-full bg-[#d7d7d9] text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                        required>
+                </div>
+
+                <div class="flex justify-center items-center font-poppins">
+                    <input type="password" name="password" placeholder="   Password"
+                        class="w-11/12 p-2 pt-2 text-sm rounded-full bg-[#d7d7d9] text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                        required>
+                </div>
+
+                <div class="flex justify-center">
+                    <button
+                        type="submit"
+                        class="w-1/2 py-2 text-white text-sm font-bold font-poppins mb-20
+                              bg-[#6668af] rounded-full
+                              hover:bg-[#7f81c6]
+                              active:bg-[#4b4d88]
+                              transition-colors duration-200 ease-in-out">
+                        LOGIN
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 </body>
 </html>

@@ -1,36 +1,235 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <title>Chat</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/output.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        #prompt::-webkit-scrollbar {
+        width: 8px;
+        }
+
+        #prompt::-webkit-scrollbar-track {
+        background: #30313e;          
+        border-radius: 10px;
+        }
+
+        #prompt::-webkit-scrollbar-thumb {
+        background: #606288;          
+        border-radius: 10px;
+        border: 2px solid #30313e;   
+        }
+
+        #prompt::-webkit-scrollbar-thumb:hover {
+        background: #9ea0e6;          
+        }
+
+        #prompt {
+        scrollbar-width: thin;                    
+        scrollbar-color: #606288 #30313e;         
+        }
+    </style>
+    <title>AskBIG</title>
 </head>
-<body class="bg-gray-900 text-white min-h-screen p-4 font-sans">
-  <div class="max-w-3xl mx-auto space-y-6">
-    <div class="flex justify-between items-center">
-      <h1 class="text-2xl font-bold">🔊 RAG Chatbot</h1>
-      <a href="{{ url_for('logout') }}" class="text-sm text-red-300 hover:underline">Logout</a>
-    </div>
-
-    <div class="space-y-2">
-      {% for msg in messages %}
-        <div class="p-4 rounded {{ 'bg-blue-600 ml-auto text-right' if msg.role == 'user' else 'bg-gray-700 mr-auto text-left' }}">
-          {{ msg.content }}
+<body class="bg-[#30313e] text-white min-h-screen font-poppins">
+    <div class="w-full max-w-[995px] h-full px-6 py-4 flex flex-col relative mx-auto">
+        <div class="w-full max-w-[995px] h-full px-9 flex flex-col">
+            <div class="sticky top-0 w-full max-w-[995px] flex justify-between items-center bg-[#30313e] border-b-3 border-[#606288] pt-3 pb-3 px-6 mb-2">
+                <h1 class="text-2xl font-bold font-poppins">AskBIG</h1>
+                <a href="{{ url_for('logout') }}" class="text-sm text-white hover:underline font-poppins">Logout</a>
+            </div>
+        
+            <div class="mb-50">
+                {% for msg in messages %}
+                <div class="flex {{ 'justify-end' if msg.role == 'user' else 'justify-start' }}">
+                    <div
+                        class="
+                        max-w-[80%]
+                        min-w-0
+                        px-5 py-5
+                        text-sm leading-relaxed text-white                       
+                        {{ 'bg-[#606288] rounded-tl-[30px] rounded-tr-sm rounded-bl-[30px] rounded-br-[30px] mx-5' if msg.role == 'user' 
+                            else 'bg-[#30313e] rounded-tr-[30px] rounded-tl-sm rounded-br-[30px] rounded-bl-[30px]' }}
+                        ">
+                        <pre class="whitespace-pre-wrap font-poppins text-sm leading-relaxed text-white break-words">{{ msg.content }}</pre>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>   
+            
+            <div class="sticky bottom-0 w-full max-w-[995px] h-24 flex bg-[#30313e] "></div>
         </div>
-      {% endfor %}
     </div>
 
-    {% if audio_html %}
-      {{ audio_html|safe }}
-    {% endif %}
+       <div id="audio-output" class="mt-4 hidden">
+            {% if audio_html %}
+                {{ audio_html|safe }}
+            {% endif %}
+        </div>
 
-    <form method="POST" class="bg-gray-800 p-4 rounded space-y-4">
-      <textarea name="prompt" required class="w-full p-2 rounded bg-gray-100 text-black" rows="2" placeholder="Your message..."></textarea>
-      <label class="flex items-center space-x-2 text-sm">
-        <input type="checkbox" name="enable_audio" class="form-checkbox">
-        <span>Enable AI Voice</span>
-      </label>
-      <button type="submit" class="bg-green-500 px-4 py-2 rounded text-white">Send</button>
+
+    <form method="POST" 
+        class="fixed bottom-[42.5px] left-1/2 -translate-x-1/2 w-[90%] max-w-[875px] bg-[#30313e] border-[3px] border-[#606288] rounded-[20px] p-6 shadow-[0_-16px_32px_rgba(12,12,13,0.4)] z-10 flex flex-col max-h-[calc(100vh-100px)] overflow-hidden">
+
+        <!-- Textarea (auto-expand) -->
+        <textarea
+            id="prompt"
+            name="prompt"
+            rows="1"
+            required
+            class="w-full max-h-[16rem] overflow-y-auto p-1 rounded-md bg-[#30313e] text-sm text-white font-poppins resize-none placeholder:text-gray-500 focus:outline-none focus:ring-0 focus:border-transparent"
+            placeholder="Test this baddie..."
+        ></textarea>
+
+        <!-- Bottom Controls (stick to bottom even if textarea grows) -->
+        <div class="mt-auto flex flex-col sm:flex-row items-start sm:items-center justify-end pt-4">
+            <div class="flex items-center space-x-2 self-end sm:self-auto">
+                <!-- Audio Button -->
+                <button type="button" title="Audio" id="audio-toggle">
+                    <svg id="mic-off" xmlns="http://www.w3.org/2000/svg" fill="none"
+                        viewBox="0 0 24 24" stroke-width="1.5" stroke="#9ea0e6"
+                        class="size-8 fill-[#30313e] hover:fill-white hover:stroke-white transition">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M19.114 5.636a9 9 0 0 1 0 12.728M16.463 8.288a5.25 5.25 0 0 1 0 7.424M6.75 8.25l4.72-4.72a.75.75 0 0 1 1.28.53v15.88a.75.75 0 0 1-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.009 9.009 0 0 1 2.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75Z" />
+                    </svg>
+
+                    <svg id="mic-on" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                        stroke="#ffffff" fill="currentColor"
+                        class="size-8 fill-white hidden">
+                        <path
+                            d="M13.5 4.06c0-1.336-1.616-2.005-2.56-1.06l-4.5 4.5H4.508c-1.141 0-2.318.664-2.66 1.905A9.76 9.76 0 0 0 1.5 12c0 .898.121 1.768.35 2.595.341 1.24 1.518 1.905 2.659 1.905h1.93l4.5 4.5c.945.945 2.561.276 2.561-1.06V4.06ZM18.584 5.106a.75.75 0 0 1 1.06 0c3.808 3.807 3.808 9.98 0 13.788a.75.75 0 0 1-1.06-1.06 8.25 8.25 0 0 0 0-11.668.75.75 0 0 1 0-1.06Z" />
+                        <path
+                            d="M15.932 7.757a.75.75 0 0 1 1.061 0 6 6 0 0 1 0 8.486.75.75 0 0 1-1.06-1.061 4.5 4.5 0 0 0 0-6.364.75.75 0 0 1 0-1.06Z" />
+                    </svg>
+                </button>
+
+                <!-- Divider -->
+                <div class="w-[2px] h-[35px] rounded-full bg-[#d7d7d7]/[0.42]"></div>
+
+                <!-- Submit -->
+                <button type="submit">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                        class="w-8 h-8 fill-[#9ea0e6] hover:fill-white transition">
+                        <path
+                            d="M3.478 2.404a.75.75 0 0 0-.926.941l2.432 7.905H13.5a.75.75 0 0 1 0 1.5H4.984l-2.432 7.905a.75.75 0 0 0 .926.94 60.519 60.519 0 0 0 18.445-8.986.75.75 0 0 0 0-1.218A60.517 60.517 0 0 0 3.478 2.404Z" />
+                    </svg>
+                </button>
+            </div>
+        </div>
     </form>
-  </div>
+
+ 
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+        const textarea = document.getElementById('prompt');
+        const form = textarea.closest('form'); // Get the form element
+        const audioToggle = document.getElementById('audio-toggle');
+        const audioOutput = document.getElementById('audio-output');
+        const micOff = document.getElementById('mic-off');
+        const micOn = document.getElementById('mic-on');
+        
+        // Constants for sizing
+        const MIN_FORM_HEIGHT = 143;
+        const MIN_TEXTAREA_HEIGHT = 80;
+        const LINE_HEIGHT = 20; // Approximate line height
+        const FORM_PADDING = 63; // Form padding + button area height
+        const MAX_FORM_HEIGHT = 400; // Maximum form height
+        
+        function autoResize() {
+            // Reset height to measure scroll height
+            textarea.style.height = MIN_TEXTAREA_HEIGHT + 'px';
+            
+            // Calculate new height based on content
+            const scrollHeight = textarea.scrollHeight;
+            const newTextareaHeight = Math.max(MIN_TEXTAREA_HEIGHT, scrollHeight);
+            
+            // Set textarea height
+            textarea.style.height = newTextareaHeight + 'px';
+            
+            // Calculate and set form height
+            const newFormHeight = Math.min(
+                MAX_FORM_HEIGHT,
+                Math.max(MIN_FORM_HEIGHT, newTextareaHeight + FORM_PADDING)
+            );
+            
+            form.style.height = newFormHeight + 'px';
+            
+            // Handle scrolling for very long text
+            if (newTextareaHeight >= MAX_FORM_HEIGHT - FORM_PADDING) {
+                textarea.style.overflowY = 'auto';
+            } else {
+                textarea.style.overflowY = 'hidden';
+            }
+        }
+        
+        // Handle Enter key for submission and Shift+Enter for new line
+        textarea.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                if (e.shiftKey) {
+                    return;
+                } else {
+                    e.preventDefault();
+                    const promptValue = textarea.value.trim();
+                    if (promptValue) {
+                        form.submit(); 
+                    }
+                }
+            }
+        });
+        
+        textarea.addEventListener('input', autoResize);
+        textarea.addEventListener('paste', function() {
+            setTimeout(autoResize, 0);
+        });
+        
+        let isAudioOn = false;
+        // audioToggle.addEventListener('click', function() {
+        //     isAudioOn = !isAudioOn;
+        //     if (isAudioOn) {
+        //         micOff.classList.add('hidden');
+        //         micOn.classList.remove('hidden');
+        //     } else {
+        //         micOff.classList.remove('hidden');
+        //         micOn.classList.add('hidden');
+        //     }
+        });
+        let isAudioOn = false;
+        audioToggle.addEventListener('click', function() {
+            isAudioOn = !isAudioOn;
+
+            // Toggle icons
+            micOff.classList.toggle('hidden', isAudioOn);
+            micOn.classList.toggle('hidden', !isAudioOn);
+
+            // Toggle audio output block
+            if (audioOutput) {
+                audioOutput.classList.toggle('hidden', !isAudioOn);
+            }
+        });
+
+
+
+
+        // Form submission handler (for button clicks)
+        form.addEventListener('submit', function(e) {
+            const promptValue = textarea.value.trim();
+            if (!promptValue) {
+                e.preventDefault(); 
+                return;
+            }
+        });
+        
+        autoResize();
+       
+    </script>
+    
+    <div id="audio-output" class="mt-4 hidden">
+        {% if audio_html %}
+            {{ audio_html|safe }}
+        {% endif %}
+    </div>
+
 </body>
 </html>
