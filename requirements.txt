@@ -11,7 +11,7 @@ streamlit-audiorecorder==0.0.6
 ipython==9.1.0
 
 # Supabase client
-supabase==2.8.1
+supabase
 
 # Kokoro speech/audio pipeline
 kokoro==0.9.4

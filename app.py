@@ -25,7 +25,7 @@ app.secret_key = os.getenv("SECRET_KEY")
 app.config["TEMPLATES_AUTO_RELOAD"] = True
 
 # --- Kokoro Init ---
-def init_kokoro():
+def init_kokoro():    
     return KPipeline(lang_code='a')
 
 # --- Routes ---
@@ -87,6 +87,8 @@ def init_kokoro():
 
 #     return render_template("chat.html", messages=messages, audio_html=audio_html)
 
+
+
 @app.route("/", methods=["GET", "POST"])
 def index():
     if "user" not in session:
@@ -101,7 +103,12 @@ def index():
 
         messages.append({"role": "user", "content": prompt})
 
-        headers = {"Authorization": f"Bearer {session['access_token']}"}
+        # headers = {"Authorization": f"Bearer {session['access_token']}"}
+        headers = {
+            "Authorization": f"Bearer {session['access_token']}",
+            "apikey": SUPABASE_KEY  
+        }
+
         payload = {
             "chatInput": prompt,
             "sessionId": session["session_id"]
@@ -156,7 +163,8 @@ def login():
         try:
             res = supabase.auth.sign_in_with_password({"email": email, "password": password})
             session["user"] = res.user.email
-            session["access_token"] = res.session.access_token
+            # session["access_token"] = res.session    
+            session["access_token"] = res.session.access_token                              
             session["session_id"] = str(uuid.uuid4())
             session["messages"] = []
             return redirect(url_for("index"))
